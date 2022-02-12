@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>触摸</title>
+    <style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			.scroll{
+				width: 600px;
+				height: 25px;
+				background-color: #FFFFFF;
+				border:1px solid #FF0000;
+				margin-left: 100px;
+				top: 300px;
+				position: absolute;
+			}
+			.bar{
+				width: 15px;
+				height: 15px;
+				background-color: #369;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			.mask{
+				width: 0;
+				height: 100%;
+				background-color: #336699;
+				/*position: absolute;
+				top: 0;
+				left: 0;*/
+			}
+			.back{
+			    left:50px;
+			    height:50px;
+			    position: relative;
+			}
+			.start{
+			    left:50px;
+			    height:100px;
+			    width:500px;
+			    position: relative;
+			}
+			.sign{
+			    left:400px;
+			    height:50px;
+			    width:50px
+			    position: relative;
+			}
+			.count{
+			    float:left;
+			    left:200px;
+			    height:50px;
+			    width:50px;
+			    position: relative;
+			}
+			.start_button{
+			    float:left;
+			    height:50px;
+			    width:150px;
+			}
+			.colorw{
+			    float:left;
+			    height:50px;
+			    width:50px;
+                background:#FF0000;
+			}
+		</style>
+</head>
+<body>
+    <h1>实验二   W:25px(2.4mm) A:600px</h1><br><br>
+    <div>
+        <div class="back">
+            <a href="javascript:history.go(-1);"><font size="5" color="black">返回</font></a>
+        </div>
+        <div class="start">
+            <div class="start_button">
+                <button style="width:100px;height:50px;" name="start_experiment" onclick="start()"><font size="5" color="black">开始</font></button>
+            </div>
+            <div class="colorw" id="cw"></div>
+            <div class="count">
+                <font size="8" color="black"><p id="countdown">0</p></font>
+            </div>
+        </div>
+    </div>
+    <div class="scroll" id="scrollBar">
+			<div class="mask"></div>
+    </div>
+
+
+    <div id="touch" style="top:100px;left:500px;position: absolute;">在手机端模式打开</div>
+<script>
+
+    var start_flag=0;
+    var error_flag=0;
+    var start_time;
+    var end_time;
+    var quick_start=0;
+    var t=0;
+
+    function tou (){
+        //在网页中添加监听触摸开发、触摸中、触摸结束事件
+        document.addEventListener('touchstart',touch,false);
+        document.addEventListener('touchmove',touch,false);
+        document.addEventListener('touchend',touch,false);
+             //触摸事件调用的函数
+             function touch (event){
+             //event 当前的事件对象，包含当前事件的一些信息，比如：坐标信息
+             //var event = event || window.event 浏览器兼容
+             var event = event || window.event;
+             //获取id
+             var local = document.getElementById("touch");
+             //event.type 获取当前事件对象的类型
+             //event.touches[0] 事件对象中的第一个手指
+             // event.touches[0].clientX 事件对象中的第一个手指在客户端X坐标
+             //event.changedTouches[0].clientX 事件对象中触摸块改变的时候的坐标
+             switch(event.type){
+                case "touchstart":
+                    local.innerHTML ="Touchstart (" + event.touches[0].clientX +"," + event.touches[0].clientY +")";
+                    if((event.touches[0].clientX > 100) && start_flag == 1){
+                        alert("未从轨道头部进入，请从轨道初始点之前开始滑动手指");
+                        start_flag = 0;
+                        error_flag = 1;
+                        c.style.background = "red";
+                    }
+                    if((event.touches[0].clientY > 250) && start_flag == 0 && error_flag==0){
+                        alert("请等待倒计时结束后，信号变绿色再开始！");
+                        quick_start = 1;
+                    }
+                    break;
+                case "touchmove":
+                    event.preventDefault();
+                    local.innerHTML ="Touchmove (" + event.touches[0].clientX +"," + event.touches[0].clientY +")";
+                    if(start_flag == 1){
+                        if((event.touches[0].clientY < 300) || (event.touches[0].clientY > 325)){
+                            alert("超出轨道范围,请重新开始");
+                            start_flag = 0;
+                            error_flag = 1;
+                            c.style.background = "red";
+                        }
+                    }
+                    if((event.touches[0].clientX > 700) && start_flag == 1){
+                        end_time = new Date().getTime();
+                        t = end_time - start_time;
+                        start_flag = 0;
+                        c.style.background = "red";
+                        alert("实验结束，共花费"+ t +"ms");
+                    }
+                    break;
+                case "touchend":
+                    local.innerHTML ="Touchend (" + event.changedTouches[0].clientX +"," + event.changedTouches[0].clientY +")";
+                    break;
+            }
+        }
+
+    }
+
+    window.addEventListener('load',tou,false);
+
+    var count=document.getElementById("countdown");
+    var c=document.getElementById("cw");
+    var countdown=3;
+    function start() {
+      if (countdown == 0) {
+        if(quick_start == 1){
+            start_flag = 0;
+            quick_start = 0;
+            c.style.background = "red";
+        }
+        count.innerHTML = 0;
+        c.style.background = "green";
+        start_flag = 1;
+        error_flag = 0;
+        start_time = new Date().getTime();
+        countdown=3;
+
+      } else {
+        count.innerHTML = countdown;
+        countdown--;
+        setTimeout(function() {
+          start()
+        },1000)
+      }
+    }
+
+    var mo = function (e) {
+        e.preventDefault();
+    };
+    function stop() {
+        document.body.style.overflow = 'hidden'; // 隐藏滚动条
+        document.addEventListener("touchmove", mo, {
+            passive: false
+        }); //禁止页面滑动
+    }
+    stop();
+
+//向后端请求单条数据Info，使用Ajax,不刷新页面
+
+
+</script>
+</body>
+</html>

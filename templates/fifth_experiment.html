@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <input type="button" onclick="change()" value="下一个"> -->
+    <button onclick="change()">改变样式</button>
+    <div id="touch" style="top:100px;left:500px;position: absolute;">在手机端模式打开</div>
+<script>
+
+    function createDiv(_width, _height) {
+            var _left = randomNum(100,300);
+            var _top = randomNum(200,600);
+            var str = "";
+            str += " <div id='bar' style=' ";
+            str += "width:" + _width + "px;";
+            str += "height:" + _height + "px;";
+            // str += "background-color:" + "#DC143C" + ";";
+            str += "border:1px solid #FF0000;"
+            str += "position:absolute;";
+            str += "left:" + _left + "px;";
+            str += "top:" + _top + "px;";
+            str += "'></div>"
+
+            str += " <div id='h' style=' ";
+            str += "width:20px;";
+            str += "height:" + _height + "px;";
+            str += "background-color:" + "#006400" + ";";
+            str += "border:1px solid #006400;"
+            str += "position:absolute;";
+            str += "left:" + (_left-20) + "px;";
+            str += "top:" + _top + "px;";
+            str += "'></div>"
+
+            str += " <div id='b' style=' ";
+            str += "width:20px;";
+            str += "height:" + _height + "px;";
+            str += "background-color:" + "#006400" + ";";
+            str += "border:1px solid #006400;"
+            str += "position:absolute;";
+            str += "left:" + (_left + _width) + "px;";
+            str += "top:" + _top + "px;";
+            str += "'></div>"
+            document.write(str);
+    }
+    function sleep(delay) {
+        var start = (new Date()).getTime();
+        while((new Date()).getTime() - start < delay) {
+            continue;
+    }
+}
+    function randomNum(minNum,maxNum){
+        switch(arguments.length){
+            case 1:
+                return parseInt(Math.random()*minNum+1,10);
+            break;
+            case 2:
+                return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10);
+            break;
+                default:
+                    return 0;
+                break;
+        }
+    }
+    var hei = new Array(10,20,30,40,50,60);
+    var wid = new Array(100,200,300,400,500,600);
+    var s = new Array();
+    for(var x=0;x<36;x++){
+        s[x]=new Array();        //声明二维数组
+        for(var y=0;y<2;y++){
+            s[x][y]=0;          //数组初始化为0
+        }
+    }
+    for(var i=0;i<36;i++){
+        if(i<6){
+            s[i][0] = hei[0];
+            s[i][1] = wid[i];
+        }
+        else if((i>=6)&&(i<12)){
+            s[i][0] = hei[1];
+            s[i][1] = wid[i-6];
+        }
+        else if((i>=12)&&(i<18)){
+            s[i][0] = hei[1];
+            s[i][1] = wid[i-12];
+        }
+        else if((i>=18)&&(i<24)){
+            s[i][0] = hei[1];
+            s[i][1] = wid[i-18];
+        }
+        else if((i>=24)&&(i<30)){
+            s[i][0] = hei[1];
+            s[i][1] = wid[i-24];
+        }
+        else if((i>=30)&&(i<36)){
+            s[i][0] = hei[1];
+            s[i][1] = wid[i-30];
+        }
+    }
+    var w,h;
+    var j = 0;
+    w = s[j][1];
+    h = s[j][0];
+    createDiv(w, h);
+    var barid = 'bar';
+    var hea = 'h';
+    var bac = 'b';
+    var bar = document.getElementById(barid);
+    var he = document.getElementById(hea);
+    var ba = document.getElementById(bac);
+    var nl = '100px';
+    var nt = '100px';
+    function nlt(){
+        nl = randomNum(100,300);
+        nt = randomNum(200,600);
+        return nl,nt;
+    }
+    function change_inside(nl,nt){
+        bar.style.width = w + "px";
+        bar.style.height = h + "px";
+        bar.style.left = nl + 'px';
+        bar.style.top = nt + "px";
+
+        he.style.height = h + "px";
+        he.style.left = (nl-20) + 'px';
+        he.style.top = nt + "px";
+
+        ba.style.height = h + "px";
+        ba.style.left = (nl + w) + 'px';
+        ba.style.top = nt + "px";
+    }
+
+    function change() {
+        j++;
+        w = s[j][1];
+        h = s[j][0];
+        nl,nt = nlt();
+        change_inside(nl,nt);
+        // console.log(nl,nt);
+
+    }
+
+
+
+
+</script>
+
+<script>
+
+    var start_flag=0;
+    var error_flag=0;
+    var start_time;
+    var end_time;
+    var quick_start=0;
+    var t=0;
+
+    function tou (){
+        //在网页中添加监听触摸开发、触摸中、触摸结束事件
+        document.addEventListener('touchstart',touch,false);
+        document.addEventListener('touchmove',touch,false);
+        document.addEventListener('touchend',touch,false);
+             //触摸事件调用的函数
+             function touch (event){
+             //event 当前的事件对象，包含当前事件的一些信息，比如：坐标信息
+             //var event = event || window.event 浏览器兼容
+             var event = event || window.event;
+             //获取id
+             var local = document.getElementById("touch");
+             //event.type 获取当前事件对象的类型
+             //event.touches[0] 事件对象中的第一个手指
+             // event.touches[0].clientX 事件对象中的第一个手指在客户端X坐标
+             //event.changedTouches[0].clientX 事件对象中触摸块改变的时候的坐标
+             switch(event.type){
+                case "touchstart":
+                    local.innerHTML ="Touchstart (" + event.touches[0].clientX +"," + event.touches[0].clientY +")";
+                    break;
+                case "touchmove":
+                    event.preventDefault();
+                    local.innerHTML ="Touchmove (" + event.touches[0].clientX +"," + event.touches[0].clientY +")";
+                    break;
+                case "touchend":
+                    local.innerHTML ="Touchend (" + event.changedTouches[0].clientX +"," + event.changedTouches[0].clientY +")";
+                    break;
+            }
+        }
+
+    }
+
+    window.addEventListener('load',tou,false);
+
+    var count=document.getElementById("countdown");
+    var c=document.getElementById("cw");
+    var countdown=3;
+
+    var mo = function (e) {
+        e.preventDefault();
+    };
+    function stop() {
+        document.body.style.overflow = 'hidden'; // 隐藏滚动条
+        document.addEventListener("touchmove", mo, {
+            passive: false
+        }); //禁止页面滑动
+    }
+    stop();
+
+//向后端请求单条数据Info，使用Ajax,不刷新页面
+
+
+</script>
+
+
+</body>
+</html>
+
