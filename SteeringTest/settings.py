@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-im5ayy=6m^ud1@l#ft0z-56dgi5tl!u(h#1un7xwgi39nxfrhx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.31.211"]
+
+ALLOWED_HOSTS = ["127.0.0.1", "10.38.10.153", "10.34.31.45", "10.34.24.117", "10.34.9.204"]
 
 
 # Application definition
@@ -76,7 +77,11 @@ WSGI_APPLICATION = 'SteeringTest.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': 'table',
+        'USER': 'root',  # 连接数据库的用户名称
+        'PASSWORD': '314159',  # 用户密码
+        'HOST': '127.0.0.1',  # 访问的数据库的主机的ip地址
+        'PORT': '3306',  # 默认mysql访问端口
     }
 }
 

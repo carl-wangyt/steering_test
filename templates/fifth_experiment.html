@@ -3,13 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.3.1/jquery.min.js"></script>
     <title>Document</title>
 </head>
 <body>
     <!-- <input type="button" onclick="change()" value="下一个"> -->
-    <button onclick="change()">改变样式</button>
+    <button style="width:100px;height:60px" onclick="clickme()">提交</button>
+    <div id="title" style="top:10px;left:200px;position: absolute;"><font size="5" color="black">steering law验证实验</font></div>
+    <div id="times" style="top:10px;left:500px;position: absolute;">正在进行第1轮实验</font></div>
     <div id="touch" style="top:100px;left:500px;position: absolute;">在手机端模式打开</div>
+    <div id="topline" style="top:180px;height:0px;width:900px;position: absolute;border:1px solid #FF0000;"></div>
+
 <script>
+    // 生成一个随机不重复数列
+    var arr = new Array();
+    for(var i = 0;i < 36;i++){
+        arr.push(i);
+    }
+    var result=[];
+    arr.sort(function(){return 0.5-Math.random()});
+    result = arr;
+
 
     function createDiv(_width, _height) {
             var _left = randomNum(100,300);
@@ -26,17 +40,17 @@
             str += "'></div>"
 
             str += " <div id='h' style=' ";
-            str += "width:20px;";
+            str += "width:40px;";
             str += "height:" + _height + "px;";
             str += "background-color:" + "#006400" + ";";
             str += "border:1px solid #006400;"
             str += "position:absolute;";
-            str += "left:" + (_left-20) + "px;";
+            str += "left:" + (_left-40) + "px;";
             str += "top:" + _top + "px;";
             str += "'></div>"
 
             str += " <div id='b' style=' ";
-            str += "width:20px;";
+            str += "width:40px;";
             str += "height:" + _height + "px;";
             str += "background-color:" + "#006400" + ";";
             str += "border:1px solid #006400;"
@@ -46,12 +60,8 @@
             str += "'></div>"
             document.write(str);
     }
-    function sleep(delay) {
-        var start = (new Date()).getTime();
-        while((new Date()).getTime() - start < delay) {
-            continue;
-    }
-}
+
+    // 获取一个范围内的随机数
     function randomNum(minNum,maxNum){
         switch(arguments.length){
             case 1:
@@ -65,7 +75,7 @@
                 break;
         }
     }
-    var hei = new Array(10,20,30,40,50,60);
+    var hei = new Array(10,15,20,25,30,35);
     var wid = new Array(100,200,300,400,500,600);
     var s = new Array();
     for(var x=0;x<36;x++){
@@ -84,26 +94,32 @@
             s[i][1] = wid[i-6];
         }
         else if((i>=12)&&(i<18)){
-            s[i][0] = hei[1];
+            s[i][0] = hei[2];
             s[i][1] = wid[i-12];
         }
         else if((i>=18)&&(i<24)){
-            s[i][0] = hei[1];
+            s[i][0] = hei[3];
             s[i][1] = wid[i-18];
         }
         else if((i>=24)&&(i<30)){
-            s[i][0] = hei[1];
+            s[i][0] = hei[4];
             s[i][1] = wid[i-24];
         }
         else if((i>=30)&&(i<36)){
-            s[i][0] = hei[1];
+            s[i][0] = hei[5];
             s[i][1] = wid[i-30];
         }
     }
+
+    var index = 0;
     var w,h;
     var j = 0;
-    w = s[j][1];
-    h = s[j][0];
+    var nl,nt;
+
+    // 初始化
+    index = result[0];
+    w = s[index][1];
+    h = s[index][0];
     createDiv(w, h);
     var barid = 'bar';
     var hea = 'h';
@@ -125,7 +141,7 @@
         bar.style.top = nt + "px";
 
         he.style.height = h + "px";
-        he.style.left = (nl-20) + 'px';
+        he.style.left = (nl-40) + 'px';
         he.style.top = nt + "px";
 
         ba.style.height = h + "px";
@@ -133,22 +149,47 @@
         ba.style.top = nt + "px";
     }
 
-    function change() {
-        j++;
-        w = s[j][1];
-        h = s[j][0];
-        nl,nt = nlt();
-        change_inside(nl,nt);
-        // console.log(nl,nt);
-
+    var times = 1;
+    var e_time = document.getElementById("times");
+    // 提交函数，将时间等数据传到后端并刷新下一个实验
+    function clickme() {
+        $.ajax({
+            url:'/fifth_experiment/save_data/',
+            type:"get",
+            data:{
+                len:parseInt(bar.style.width),
+                wid:parseInt(bar.style.height),
+                time:t
+<!--                l:parseInt(bar.style.width),-->
+<!--                w:parseInt(bar.style.height)-->
+            },
+            success: function (res) {
+                e_time.innerHTML ="正在进行第" + times + "轮实验";
+                t = 0;
+                j++;
+                if(j < 36 ){
+                    index = result[j];
+                    w = s[index][1];
+                    h = s[index][0];
+                    nl,nt = nlt();
+                    change_inside(nl,nt);
+                }
+                else{
+<!--                    alert("本轮实验结束，请继续进行下一轮实验");-->
+                    j = 0;
+                    index = result[j];
+                    w = s[index][1];
+                    h = s[index][0];
+                    nl,nt = nlt();
+                    change_inside(nl,nt);
+                    times++;
+                }
+                if(times > 5){
+                    alert("实验结束，感谢您的参与");
+                }
+            }
+        })
     }
-
-
-
-
-</script>
-
-<script>
 
     var start_flag=0;
     var error_flag=0;
@@ -156,7 +197,7 @@
     var end_time;
     var quick_start=0;
     var t=0;
-
+    // 监听触摸位置函数
     function tou (){
         //在网页中添加监听触摸开发、触摸中、触摸结束事件
         document.addEventListener('touchstart',touch,false);
@@ -175,14 +216,32 @@
              //event.changedTouches[0].clientX 事件对象中触摸块改变的时候的坐标
              switch(event.type){
                 case "touchstart":
-                    local.innerHTML ="Touchstart (" + event.touches[0].clientX +"," + event.touches[0].clientY +")";
+                    local.innerHTML ="Touchstart (" + event.touches[0].clientX + "," + event.touches[0].clientY +")";
+                    if((event.touches[0].clientY > 180) && ((event.touches[0].clientX < parseInt(he.style.left)) || (event.touches[0].clientX > (parseInt(he.style.left) + 40)) || (event.touches[0].clientY < parseInt(he.style.top)) || (event.touches[0].clientY > (parseInt(he.style.top) + parseInt(he.style.height))))){
+                        start_flag = 0;
+                        alert("请从左侧绿色矩形内开始");
+                    }
+                    else{
+                        start_flag = 1;
+                        start_time = new Date().getTime();
+                    }
                     break;
                 case "touchmove":
                     event.preventDefault();
                     local.innerHTML ="Touchmove (" + event.touches[0].clientX +"," + event.touches[0].clientY +")";
+                    if((start_flag == 1) && ((event.touches[0].clientY < parseInt(he.style.top)) || (event.touches[0].clientY > (parseInt(he.style.top) + parseInt(he.style.height))))){
+                            start_flag = 0;
+                            alert("超出轨道范围,请重新开始");
+                    }
+                    if((event.touches[0].clientX > parseInt(ba.style.left)) && (start_flag == 1)){
+                        start_flag = 0;
+                        end_time = new Date().getTime();
+                        t = end_time - start_time;
+                        alert("实验结束，共花费"+ t +"ms");
+                    }
                     break;
                 case "touchend":
-                    local.innerHTML ="Touchend (" + event.changedTouches[0].clientX +"," + event.changedTouches[0].clientY +")";
+                    local.innerHTML ="Touchend (" + event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY +")";
                     break;
             }
         }
@@ -205,9 +264,6 @@
         }); //禁止页面滑动
     }
     stop();
-
-//向后端请求单条数据Info，使用Ajax,不刷新页面
-
 
 </script>
 

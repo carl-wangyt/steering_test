@@ -5,6 +5,7 @@ from django.http import JsonResponse
 #: python manage.py runserver 192.168.43.30:8000
 #: python manage.py runserver 10.35.245.91:8000
 #: python manage.py runserver 192.168.31.211:8000
+#： python manage.py runserver 10.34.24.117:8000
 
 
 def first_experiment(request):
@@ -78,24 +79,31 @@ def check_data(request):
     return render(request, 'check_data.html', {'id_list': product_list})
 
 
-name = ''
-age = 0
-sex = ''
+len = 0
+wid = 0
+time = 0
 
 
 def admin(request):
     return render(request, 'admin.html')
 
 
-def add(request):
-    global name, age, sex
-    name = request.GET['name']
-    age = request.GET['age']
-    sex = request.GET['sex']
-    name = str(name)
-    age = int(age)
-    sex = str(sex)
-    # print('name:', name)
-    # print('age:', age)
-    # print('sex:', sex)
-    return render(request, 'admin.html')
+def save_data(request):
+    print(request.GET)
+    global len, wid, time
+    len = request.GET['len']
+    wid = request.GET['wid']
+    time = request.GET['time']
+    print("len:", len)
+    print("wid:", wid)
+    print("time:", time)
+    if time != '0':
+        conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', passwd='314159', db='steering_experiment',
+                               charset='utf8')
+        cursor = conn.cursor(cursor=pymysql.cursors.DictCursor)
+        cursor.execute("insert into steering_data (A,W,time) value(%s,%s,%s)", [len, wid, time, ])
+        conn.commit()
+        cursor.close()
+        conn.close()
+    return HttpResponse("")
+
